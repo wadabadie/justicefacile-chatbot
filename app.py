@@ -14,7 +14,7 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-st.markdown("# ⚖️ JusticeFacile")
+st.markdown("#  JusticeFacile")
 st.markdown('<p class="subtitle">Assistant Juridique IA — Contexte Camerounais</p>',
             unsafe_allow_html=True)
 st.markdown("---")
@@ -37,9 +37,9 @@ Règles :
 BIENVENUE = """Bonjour ! Je suis **JusticeFacile-IA**, votre assistant juridique.
 
 Je peux vous aider avec :
-- ⚖️ Vos droits en cas de licenciement, litige foncier, conflit civil
-- 🛡️ Soutien et orientation pour les victimes de violences (VBG)
-- 📚 Explication des lois camerounaises en langage simple
+-  Vos droits en cas de licenciement, litige foncier, conflit civil
+-  Soutien et orientation pour les victimes de violences (VBG)
+-  Explication des lois camerounaises en langage simple
 
 **Comment puis-je vous aider aujourd'hui ?**"""
 
@@ -65,7 +65,7 @@ if prompt := st.chat_input("Posez votre question juridique..."):
     with st.chat_message("assistant"):
         with st.spinner("JusticeFacile-IA analyse votre question..."):
             response = client.messages.create(
-                model="claude-haiku-4-5-20251001",
+                model="claude-haiku-4-5",
                 max_tokens=1024,
                 system=SYSTEM_PROMPT,
                 messages=st.session_state.messages
@@ -80,18 +80,18 @@ if prompt := st.chat_input("Posez votre question juridique..."):
 
 # Sidebar
 with st.sidebar:
-    st.markdown("### ⚖️ JusticeFacile")
+    st.markdown("###  JusticeFacile")
     st.markdown("**Assistant Juridique IA**")
     st.markdown("---")
     st.markdown("🇨🇲 Spécialisé droit camerounais")
-    st.markdown("🛡️ Soutien victimes VBG")
+    st.markdown(" Soutien victimes VBG")
     st.markdown("---")
-    st.markdown("**🚨 Urgences :**")
+    st.markdown("** Urgences :**")
     st.markdown("Police : **117**")
     st.markdown("VBG : **116**")
     st.markdown("SAMU : **115**")
     st.markdown("---")
-    if st.button("🗑️ Effacer la conversation"):
+    if st.button(" Effacer la conversation"):
         st.session_state.messages = []
         st.rerun()
     st.markdown("---")
