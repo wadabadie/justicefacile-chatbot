@@ -14,7 +14,7 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-st.markdown("#  JusticeFacile")
+st.markdown("# ⚖️ JusticeFacile")
 st.markdown('<p class="subtitle">Assistant Juridique IA — Contexte Camerounais</p>',
             unsafe_allow_html=True)
 st.markdown("---")
@@ -30,7 +30,7 @@ Règles :
 - Bases tes réponses sur le droit camerounais (Code pénal 2016/007, Code civil, Code du travail 92/007)
 - Sois empathique, clair et accessible pour tout niveau d'éducation
 - Pour les urgences VBG rappelle le 117 (Police) et le 116 (VBG Cameroun)
-- Précise que tu es un assistant de premier niveau et qu'un juriste certifié doit être consulté pour les cas complexes
+- Précise que tu es un assistant de premier niveau et qu'un juriste certifié doit être consulté
 - Ne donne jamais de conseils médicaux"""
 
 if "messages" not in st.session_state:
@@ -40,9 +40,9 @@ if "messages" not in st.session_state:
             "content": """Bonjour ! Je suis **JusticeFacile-IA**, votre assistant juridique.
 
 Je peux vous aider avec :
--  Vos droits en cas de licenciement, litige foncier, conflit civil
--  Soutien et orientation pour les victimes de violences (VBG)
--  Explication des lois camerounaises en langage simple
+- ⚖️ Vos droits en cas de licenciement, litige foncier, conflit civil
+- 🛡️ Soutien et orientation pour les victimes de violences (VBG)
+- 📚 Explication des lois camerounaises en langage simple
 
 **Comment puis-je vous aider aujourd'hui ?**"""
         }
@@ -60,12 +60,22 @@ if prompt := st.chat_input("Posez votre question juridique..."):
     with st.chat_message("assistant"):
         with st.spinner("JusticeFacile-IA analyse votre question..."):
 
+            # Construire l'historique en excluant le message de bienvenue
             messages_api = []
             for msg in st.session_state.messages:
-                messages_api.append({
-                    "role": msg["role"],
-                    "content": msg["content"]
-                })
+                if msg["role"] in ["user", "assistant"]:
+                    messages_api.append({
+                        "role": msg["role"],
+                        "content": msg["content"]
+                    })
+
+            # Claude exige que le premier message soit "user"
+            if messages_api and messages_api[0]["role"] == "assistant":
+                messages_api = messages_api[1:]
+
+            # Si vide après filtrage, ajouter le message courant
+            if not messages_api:
+                messages_api = [{"role": "user", "content": prompt}]
 
             response = client.messages.create(
                 model="claude-haiku-4-5-20251001",
@@ -82,18 +92,18 @@ if prompt := st.chat_input("Posez votre question juridique..."):
     })
 
 with st.sidebar:
-    st.markdown("###  JusticeFacile")
+    st.markdown("### ⚖️ JusticeFacile")
     st.markdown("**Assistant Juridique IA**")
     st.markdown("---")
-    st.markdown(" Spécialisé droit camerounais")
-    st.markdown(" Soutien victimes VBG")
+    st.markdown("🇨🇲 Spécialisé droit camerounais")
+    st.markdown("🛡️ Soutien victimes VBG")
     st.markdown("---")
-    st.markdown("** Urgences :**")
+    st.markdown("**🚨 Urgences :**")
     st.markdown("Police : **117**")
     st.markdown("VBG : **116**")
     st.markdown("SAMU : **115**")
     st.markdown("---")
-    if st.button(" Effacer la conversation"):
+    if st.button("🗑️ Effacer la conversation"):
         st.session_state.messages = [
             {
                 "role": "assistant",
