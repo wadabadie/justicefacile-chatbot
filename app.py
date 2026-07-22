@@ -1,5 +1,5 @@
 import streamlit as st
-from groq import Groq
+import anthropic
 
 st.set_page_config(
     page_title="JusticeFacile — Assistant Juridique IA",
@@ -19,7 +19,7 @@ st.markdown('<p class="subtitle">Assistant Juridique IA — Contexte Camerounais
             unsafe_allow_html=True)
 st.markdown("---")
 
-client = Groq(api_key=st.secrets["GROQ_API_KEY"])
+client = anthropic.Anthropic(api_key=st.secrets["ANTHROPIC_API_KEY"])
 
 SYSTEM_PROMPT = """Tu es JusticeFacile-IA, l'assistant juridique intelligent de la plateforme 
 JusticeFacile, spécialisé dans le droit camerounais. Tu aides les citoyens camerounais 
@@ -59,20 +59,21 @@ if prompt := st.chat_input("Posez votre question juridique..."):
 
     with st.chat_message("assistant"):
         with st.spinner("JusticeFacile-IA analyse votre question..."):
-            messages_api = [{"role": "system", "content": SYSTEM_PROMPT}]
+
+            messages_api = []
             for msg in st.session_state.messages:
                 messages_api.append({
                     "role": msg["role"],
                     "content": msg["content"]
                 })
 
-            response = client.chat.completions.create(
-                model="llama-3.3-70b-versatile",
-                messages=messages_api,
+            response = client.messages.create(
+                model="claude-haiku-4-5-20251001",
                 max_tokens=1024,
-                temperature=0.7,
+                system=SYSTEM_PROMPT,
+                messages=messages_api
             )
-            reponse_text = response.choices[0].message.content
+            reponse_text = response.content[0].text
             st.markdown(reponse_text)
 
     st.session_state.messages.append({
