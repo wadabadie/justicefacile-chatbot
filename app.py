@@ -28,7 +28,7 @@ genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
 model = genai.GenerativeModel("gemini-1.5-flash")
 
 # Prompt système
-SYSTEM_PROMPT = """Tu es Juris-IA, l'assistant juridique intelligent de la plateforme 
+SYSTEM_PROMPT = """Tu es JusticeFacile-IA, l'assistant juridique intelligent de la plateforme 
 JusticeFacile, spécialisé dans le droit camerounais. Tu aides les citoyens camerounais 
 à comprendre leurs droits, à naviguer dans les procédures juridiques, et tu offres un 
 soutien spécial aux victimes de violences basées sur le genre (VBG).
@@ -53,14 +53,13 @@ if "chat" not in st.session_state:
 
 # Affichage historique
 for message in st.session_state.messages:
-    with st.chat_message(message["role"],
-                         avatar=" " if message["role"] == "assistant" else " "):
+    with st.chat_message(message["role"]):
         st.markdown(message["content"])
 
 # Message de bienvenue
 if not st.session_state.messages:
     with st.chat_message("assistant"):
-        welcome = """Bonjour ! Je suis **Juris-IA**, votre assistant juridique intelligent.
+        welcome = """Bonjour ! Je suis **Justicefacile-IA**, votre assistant juridique intelligent.
 
 Je peux vous aider avec :
 -  Vos droits en cas de licenciement, litige foncier, conflit civil
@@ -84,7 +83,7 @@ if prompt := st.chat_input("Posez votre question juridique..."):
 
     # Générer réponse Gemini
     with st.chat_message("assistant"):
-        with st.spinner("Juris-IA analyse votre question..."):
+        with st.spinner("JusticeFacile-IA analyse votre question..."):
             full_prompt = f"{SYSTEM_PROMPT}\n\nQuestion : {prompt}"
             response = st.session_state.chat.send_message(full_prompt)
             st.markdown(response.text)
