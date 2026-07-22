@@ -33,11 +33,8 @@ Règles :
 - Précise que tu es un assistant de premier niveau et qu'un juriste certifié doit être consulté
 - Ne donne jamais de conseils médicaux"""
 
-if "messages" not in st.session_state:
-    st.session_state.messages = [
-        {
-            "role": "assistant",
-            "content": """Bonjour ! Je suis **JusticeFacile-IA**, votre assistant juridique.
+# Message de bienvenue affiché mais PAS dans l'historique API
+BIENVENUE = """Bonjour ! Je suis **JusticeFacile-IA**, votre assistant juridique.
 
 Je peux vous aider avec :
 - ⚖️ Vos droits en cas de licenciement, litige foncier, conflit civil
@@ -45,13 +42,21 @@ Je peux vous aider avec :
 - 📚 Explication des lois camerounaises en langage simple
 
 **Comment puis-je vous aider aujourd'hui ?**"""
-        }
-    ]
 
+# Historique API — commence toujours vide (pas de message bienvenue dedans)
+if "messages" not in st.session_state:
+    st.session_state.messages = []
+
+# Afficher le message de bienvenue visuellement
+with st.chat_message("assistant"):
+    st.markdown(BIENVENUE)
+
+# Afficher l'historique des vrais échanges
 for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
 
+# Input utilisateur
 if prompt := st.chat_input("Posez votre question juridique..."):
     st.session_state.messages.append({"role": "user", "content": prompt})
     with st.chat_message("user"):
@@ -59,29 +64,11 @@ if prompt := st.chat_input("Posez votre question juridique..."):
 
     with st.chat_message("assistant"):
         with st.spinner("JusticeFacile-IA analyse votre question..."):
-
-            # Construire l'historique en excluant le message de bienvenue
-            messages_api = []
-            for msg in st.session_state.messages:
-                if msg["role"] in ["user", "assistant"]:
-                    messages_api.append({
-                        "role": msg["role"],
-                        "content": msg["content"]
-                    })
-
-            # Claude exige que le premier message soit "user"
-            if messages_api and messages_api[0]["role"] == "assistant":
-                messages_api = messages_api[1:]
-
-            # Si vide après filtrage, ajouter le message courant
-            if not messages_api:
-                messages_api = [{"role": "user", "content": prompt}]
-
             response = client.messages.create(
                 model="claude-haiku-4-5-20251001",
                 max_tokens=1024,
                 system=SYSTEM_PROMPT,
-                messages=messages_api
+                messages=st.session_state.messages
             )
             reponse_text = response.content[0].text
             st.markdown(reponse_text)
@@ -91,6 +78,7 @@ if prompt := st.chat_input("Posez votre question juridique..."):
         "content": reponse_text
     })
 
+# Sidebar
 with st.sidebar:
     st.markdown("### ⚖️ JusticeFacile")
     st.markdown("**Assistant Juridique IA**")
@@ -104,12 +92,7 @@ with st.sidebar:
     st.markdown("SAMU : **115**")
     st.markdown("---")
     if st.button("🗑️ Effacer la conversation"):
-        st.session_state.messages = [
-            {
-                "role": "assistant",
-                "content": "Bonjour ! Je suis **JusticeFacile-IA**. Comment puis-je vous aider ?"
-            }
-        ]
+        st.session_state.messages = []
         st.rerun()
     st.markdown("---")
     st.markdown("*Pour les cas complexes, consultez un juriste certifié.*")
